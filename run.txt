@@ -1,0 +1,2 @@
+python -m venv jarvis
+jarvis\Scripts\activate

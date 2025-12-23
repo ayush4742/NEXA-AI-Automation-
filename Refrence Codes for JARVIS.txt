@@ -1,0 +1,83 @@
+1: For playing Videos/Songs:
+import pywhatkit as kit
+kit.playonyt("{Song Name}")
+
+2: Searching a File/App(Unless Specified):
+import pyautogui
+import time
+time.sleep(1)
+pyautogui.press('win')
+time.sleep(1)
+pyautogui.typewrite('{App/File Name}')
+time.sleep(1)
+pyautogui.press('enter')
+
+3: For making calls:
+import pyautogui
+import time
+pyautogui.press('win')
+time.sleep(1)
+pyautogui.write('Phone Link')
+time.sleep(1)
+pyautogui.press('enter')
+time.sleep(5)
+pyautogui.click(x=1633, y=182)
+time.sleep(1)
+pyautogui.write('{Contact Name}')
+time.sleep(1)
+pyautogui.press('enter')
+time.sleep(3)
+pyautogui.click(x=1668, y=878)
+time.sleep(1)
+
+4: For sending message on WhatsApp:
+import pyautogui
+import time
+pyautogui.press('win')
+pyautogui.typewrite('whatsapp')
+pyautogui.press('enter')
+time.sleep(1)
+pyautogui.hotkey('ctrl', 'f')
+pyautogui.typewrite('{Contact Name}')
+time.sleep(0.5)
+pyautogui.press('enter')
+pyautogui.typewrite("{message}")
+time.sleep(0.5)
+pyautogui.press('enter')
+
+5: For WhatsApp call:
+import pyautogui
+import time
+pyautogui.press('win')
+pyautogui.typewrite('whatsapp')
+pyautogui.press('enter')
+time.sleep(1)
+pyautogui.hotkey('ctrl', 'f')
+pyautogui.typewrite('{Contact Name}')
+time.sleep(1)
+call_type = 'voice'
+pyautogui.press('enter')
+if call_type.lower() == "voice":
+    pyautogui.click(1747, 82)
+else:
+    pyautogui.click(1682, 76)
+
+6: For sending Instagram Message:
+import pyautogui
+import time
+import webbrowser
+webbrowser.open("https://www.instagram.com")
+time.sleep(2)
+pyautogui.click(43,530)
+time.sleep(3)
+pyautogui.click(528,158)
+time.sleep(1)
+pyautogui.typewrite('{Contact Name}')
+time.sleep(2)
+pyautogui.click(834,428)
+pyautogui.click(948,806)
+time.sleep(1)
+pyautogui.typewrite('{Message}')
+pyautogui.press('enter')
+
+
