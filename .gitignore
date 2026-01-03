@@ -1,21 +1,20 @@
-# Environment
+# Virtual environments
+nexa/
+.venv/
+venv/
+env/
+
+# Environment variables
 .env
 
-# Python
+# Python cache
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-*.log
 
-# Virtual env
-jarvis/
-venv/
-.env/
-
-# Streamlit
-.streamlit/
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
+
+# Large generated files
+eda_report.html
+cleaned_file.xlsx
