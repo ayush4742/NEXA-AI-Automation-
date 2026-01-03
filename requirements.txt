@@ -1,0 +1,1 @@
+pip install streamlit groq pyautogui pandas ydata-profiling python-dotenv SpeechRecognition pyttsx3 pywhatkit pygetwindow

@@ -1,2 +1,2 @@
-python -m venv jarvis
-jarvis\Scripts\activate
+.\nexa\Scripts\Activate.ps1
+python -m streamlit run J3.py

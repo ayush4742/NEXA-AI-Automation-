@@ -1,19 +1,21 @@
 # NEXA — AI Automation & Data Intelligence Studio
 
-A desktop AI assistant built with Python and Streamlit that executes natural-language commands to automate desktop tasks and perform data cleaning with automatic EDA reports.
+NEXA is a desktop AI assistant built with **Python** and **Streamlit** that executes **natural-language voice or text commands** to automate desktop tasks and perform **data cleaning with automatic EDA reports**.
 
-This repository combines lightweight rule-based automation with LLM-assisted code generation to provide practical automation for common workflows (WhatsApp messaging, media playback, app launching, dataset cleaning, and more).
+The project combines **rule-based automation** (fast and reliable for common tasks) with **LLM-assisted intelligence** (for flexible and complex commands), making it a practical AI automation studio for daily workflows.
 
 ---
 
-**Table of Contents**
+## Table of Contents
+
 - [Features](#features)
-- [Tech stack](#tech-stack)
+- [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Project structure](#project-structure)
-- [Environment variables](#environment-variables)
-- [Notes & safety](#notes--safety)
+- [Voice Commands Examples](#voice-commands-examples)
+- [Project Structure](#project-structure)
+- [Environment Variables](#environment-variables)
+- [Notes & Safety](#notes--safety)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -21,104 +23,55 @@ This repository combines lightweight rule-based automation with LLM-assisted cod
 
 ## Features
 
-- AI-driven desktop automation (send WhatsApp messages, open apps, play YouTube, make desktop calls)
-- Voice command input (microphone-based recognition)
-- Data cleaner for CSV / Excel: remove empty rows, drop duplicates, normalize/trim columns
-- Automatic EDA report generation (HTML) and cleaned dataset export
-- Hybrid intelligence: rule-based execution with LLM fallback for complex tasks
+### 🤖 AI & Desktop Automation
+- Open applications (VS Code, browser, WhatsApp, etc.)
+- Send WhatsApp messages via voice commands
+- Make WhatsApp voice calls
+- Control media playback (YouTube / system media)
+  - Play / Pause / Resume
+  - Mute / Unmute
+  - Volume up / down
+  - Play songs on YouTube
+  - Play next song in a new tab
 
-## Tech stack
+### 🎙️ Voice Assistant
+- Microphone-based voice recognition
+- Robust keyword-based command matching
+- OS-level media control (reliable across browsers & apps)
+- Works independently as a background assistant (`assistant.py`)
 
-- Python
-- Streamlit (UI)
-- Groq LLM API (LLM integration)
-- PyAutoGUI (desktop automation)
-- SpeechRecognition (voice input)
-- pandas (data processing)
-- ydata-profiling (auto EDA)
-- python-dotenv (environment variables)
+### 📊 Data Cleaner & EDA
+- Upload CSV or Excel files
+- Remove empty rows and duplicate records
+- Normalize column names
+- Trim text columns
+- Generate automatic **EDA report (HTML)**
+- Download cleaned dataset and profiling report
 
-## Installation
-
-1. Create and activate a virtual environment (recommended):
-
-```bash
-python -m venv .venv
-source .venv/Scripts/activate    # On Windows (Git Bash / WSL)
-```
-
-2. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-# or install core deps directly:
-pip install streamlit groq pyautogui pandas ydata-profiling python-dotenv SpeechRecognition
-```
-
-If you don't have a `requirements.txt`, create one from the dependencies above.
-
-## Usage
-
-1. Create a `.env` file in the project root and add your API keys:
-
-```env
-GROQ_API_KEY=your_groq_api_key_here
-```
-
-2. Run the Streamlit app:
-
-```bash
-streamlit run J3.py
-```
-
-3. Example natural-language commands:
-
-- `send hi to aman on whatsapp`
-- `play believer on youtube`
-- `open vs code`
-- `call aman`
-
-Data cleaner commands (via the app UI):
-
-- Upload a CSV/Excel file and choose `Clean` to remove empty rows and duplicates, normalize column names, and trim text fields.
-- After cleaning, download the cleaned dataset and the generated `eda_report.html`.
-
-## Project structure
-
-Files in the repository (examples):
-
-- `J3.py` — Main Streamlit application
-- `.env` — Environment variables (API keys; not committed)
-- `JARVIS_db.txt` — Persistent command memory
-- `eda_report.html` — Example auto-generated EDA report
-- `cleaned_file.xlsx` — Example cleaned output
-
-Adjust names and locations as needed for your environment.
-
-## Environment variables
-
-- `GROQ_API_KEY` — API key for Groq LLM integration
-
-Keep `.env` out of version control (add it to `.gitignore`).
-
-## Notes & safety
-
-- Desktop automation can control your mouse and keyboard. Use with care and test in a safe environment.
-- Do not commit secrets or API keys to a public repository.
-
-## Contributing
-
-Contributions are welcome. Open an issue or submit a pull request with a clear description of your change.
-
-## License
-
-Specify a license for your project (e.g., MIT). If you already have a license file, reference it here.
+### 🧠 Hybrid Intelligence
+- Rule-based execution for critical commands (fast & safe)
+- LLM fallback (Groq API) for complex or custom automation
+- Persistent memory of summarized commands
 
 ---
 
-If you'd like, I can also:
-- generate a `requirements.txt` based on your current venv
-- create a `.gitignore` with `.env` and virtualenv entries
-- add a short `usage` section inside the app for command examples
+## Tech Stack
 
-Tell me which of those you'd like next.
+- **Python**
+- **Streamlit** — UI & dashboard
+- **Groq LLM API** — AI code & task generation
+- **PyAutoGUI** — Desktop automation
+- **SpeechRecognition** — Voice input
+- **pandas** — Data processing
+- **ydata-profiling** — Automated EDA reports
+- **python-dotenv** — Environment variable management
+
+---
+
+## Installation
+
+### 1️⃣ Create & activate virtual environment (recommended)
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate   # Windows (Git Bash / WSL)

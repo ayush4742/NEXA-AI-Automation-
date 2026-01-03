@@ -12,6 +12,7 @@ from groq import Groq
 from ydata_profiling import ProfileReport
 from dotenv import load_dotenv
 import os
+from PIL import ImageGrab
 load_dotenv()
 
 
@@ -92,6 +93,34 @@ def get_db(topic: str) -> str:
         }]
     )
     return response.choices[0].message.content
+
+
+# =========================
+# SANITIZE LLM OUTPUT
+# =========================
+def sanitize_code(code: str) -> str:
+    """Clean LLM output before exec:
+    - If code is wrapped in triple-backtick fences (``` or ```python), extract inner block.
+    - Remove stray fence lines if present.
+    - Strip leading/trailing whitespace.
+    """
+    if not isinstance(code, str):
+        return ""
+
+    # Look for a fenced code block and extract the first one
+    m = re.search(r"```(?:python|py)?\n([\s\S]*?)\n```", code, flags=re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+
+    # Remove any remaining triple-backtick lines
+    lines = [ln for ln in code.splitlines() if not ln.strip().startswith("```")]
+    cleaned = "\n".join(lines).strip()
+
+    # Sometimes LLMs include markdown code fences with language on the same line
+    cleaned = re.sub(r"^```[a-zA-Z0-9_-]*\s*", "", cleaned)
+    cleaned = re.sub(r"\s*```$", "", cleaned)
+
+    return cleaned.strip()
 
 # =========================
 # DATA CLEANER
@@ -235,6 +264,9 @@ def process_command(user_text: str):
     with st.spinner("Processing with NEXA..."):
         code = get_code(user_text, db)
 
+    # Sanitize LLM output (strip markdown fences or backticks)
+    code = sanitize_code(code)
+
     # Save memory
     db_content = get_db(lower)
     with open("JARVIS_db.txt", "a", encoding="utf-8") as f:
@@ -347,3 +379,109 @@ if st.session_state.mode is None:
                 process_command(typed_command.strip())
             else:
                 st.warning("Please enter a command")
+    # Assistant control buttons
+    col3 = st.columns(1)[0]
+    with col3:
+        if st.button("🟢 Start Assistant"):
+            proc = st.session_state.get("assistant_proc")
+            if proc is None:
+                try:
+                    p = subprocess.Popen([sys.executable, "assistant.py"])
+                    st.session_state["assistant_proc"] = p
+                    st.success("Assistant started")
+                except Exception as e:
+                    st.error(f"Failed to start assistant: {e}")
+            else:
+                st.info("Assistant already running")
+
+        if st.button("🔴 Stop Assistant"):
+            proc = st.session_state.get("assistant_proc")
+            if proc:
+                try:
+                    proc.terminate()
+                    st.session_state["assistant_proc"] = None
+                    st.success("Assistant stopped")
+                except Exception as e:
+                    st.error(f"Failed to stop assistant: {e}")
+            else:
+                st.info("Assistant not running")
+
+    # Skip Ad button capture tool
+    st.markdown("---")
+    st.subheader("📸 Template Capture for Ad Skip")
+    st.write("When a YouTube ad appears, use this to capture the 'Skip Ad' button so voice control can click it automatically.")
+    
+    col_x1, col_x2, col_x3, col_x4 = st.columns(4)
+    with col_x1:
+        x1 = st.number_input("Top-left X", value=1700, step=10)
+    with col_x2:
+        y1 = st.number_input("Top-left Y", value=10, step=10)
+    with col_x3:
+        x2 = st.number_input("Bottom-right X", value=1920, step=10)
+    with col_x4:
+        y2 = st.number_input("Bottom-right Y", value=60, step=10)
+    
+    if st.button("📷 Capture Skip Ad Button"):
+        try:
+            # Capture the region
+            region = (int(x1), int(y1), int(x2), int(y2))
+            img = ImageGrab.grab(bbox=region)
+            img.save("skip_ad.png")
+            st.success(f"✅ Saved skip_ad.png! Region: {region}")
+            st.image(img, caption="Captured Skip Ad Button", use_container_width=True)
+        except Exception as e:
+            st.error(f"Failed to capture: {e}")
+
+    # Auto-detect using OpenCV template match (uses saved skip_ad.png as template)
+    try:
+        import cv2
+        import numpy as np
+        has_cv = True
+    except Exception:
+        cv2 = None
+        np = None
+        has_cv = False
+
+    if st.button("🧭 Auto-detect Skip Now"):
+        if not os.path.exists('skip_ad.png'):
+            st.error('No skip_ad.png found — capture it first')
+        elif not has_cv:
+            st.error('OpenCV not installed. Run: pip install opencv-python numpy')
+        else:
+            try:
+                import pyautogui
+                # take full screenshot
+                s = pyautogui.screenshot()
+                screen = cv2.cvtColor(np.array(s), cv2.COLOR_RGB2BGR)
+                tpl = cv2.imread('skip_ad.png', cv2.IMREAD_COLOR)
+                th, tw = tpl.shape[:2]
+                best_val = -1
+                best_loc = None
+                best_scale = 1.0
+                for scale in np.linspace(0.8, 1.2, 9):
+                    try:
+                        resized = cv2.resize(tpl, (int(tw*scale), int(th*scale)), interpolation=cv2.INTER_AREA)
+                    except Exception:
+                        continue
+                    if resized.shape[0] < 5 or resized.shape[1] < 5:
+                        continue
+                    res = cv2.matchTemplate(screen, resized, cv2.TM_CCOEFF_NORMED)
+                    _, max_val, _, max_loc = cv2.minMaxLoc(res)
+                    if max_val > best_val:
+                        best_val = max_val
+                        best_loc = max_loc
+                        best_scale = scale
+                if best_val >= 0.55 and best_loc is not None:
+                    x, y = best_loc
+                    h, w = int(th*best_scale), int(tw*best_scale)
+                    cv2.rectangle(screen, (x,y), (x+w, y+h), (0,255,0), 3)
+                    out = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+                    from PIL import Image
+                    im = Image.fromarray(out)
+                    im.save('skip_ad_found.png')
+                    st.image(im, caption=f'Auto-detect found match (score {best_val:.2f})', use_column_width=True)
+                    st.success(f'Found match at {x,y} score {best_val:.2f}. Saved skip_ad_found.png')
+                else:
+                    st.warning('No confident match found (try recapturing template or adjust capture region)')
+            except Exception as e:
+                st.error(f'Auto-detect failed: {e}')
